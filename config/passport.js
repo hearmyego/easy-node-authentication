@@ -52,10 +52,10 @@ module.exports = function(passport) {
 
                 // if no user is found, return the message
                 if (!user)
-                    return done(null, false, req.flash('loginMessage', 'No user found.'));
+                    return done(null, false, req.flash('loginMessage', 'Oops! Login failled - Perhaps wrong username or password')); //No user found
 
                 if (!user.validPassword(password))
-                    return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
+                    return done(null, false, req.flash('loginMessage', 'Oops! Login failled - Perhaps wrong username or password')); // Wrong password
 
                 // all is well, return user
                 else
@@ -164,6 +164,17 @@ module.exports = function(passport) {
                             user.facebook.token = token;
                             user.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName;
                             user.facebook.email = (profile.emails[0].value || '').toLowerCase();
+                            
+                            user.facebook.picturUrl = (profile.photos[0].value || '');
+
+                            user.profile.name = user.profile.name || user.facebook.name;
+                            user.profile.email = user.profile.email || user.facebook.email;
+                            user.profile.gender = user.profile.gender || profile.gender;
+                            user.profile.birthday = user.profile.birthday || profile._json.birthday;
+                            user.profile.location = user.profile.location || profile._json.location.name;
+
+                            console.log(profile)
+                            console.log(user)
 
                             user.save(function(err) {
                                 if (err)
@@ -172,16 +183,42 @@ module.exports = function(passport) {
                                 return done(null, user);
                             });
                         }
+                        else
+                        {
+                            user.facebook.picturUrl = (profile.photos[0].value || '');
 
-                        return done(null, user); // user found, return that user
+                            user.profile.name = user.profile.name || user.facebook.name;
+                            user.profile.email = user.profile.email || user.facebook.email;
+                            user.profile.gender = user.profile.gender || profile.gender;
+                            user.profile.birthday = new Date(profile._json.birthday);
+                            user.profile.location = user.profile.location || profile._json.location.name;
+
+                            console.log(profile)
+                            console.log(user)
+
+                            user.save(function(err) {
+                                if (err)
+                                    return done(err);
+                                    
+                                return done(null, user);
+                            })
+                        }
+
                     } else {
                         // if there is no user, create them
                         var newUser            = new User();
+
+                        console.log("New user");
+                        console.log(profile);
 
                         newUser.facebook.id    = profile.id;
                         newUser.facebook.token = token;
                         newUser.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName;
                         newUser.facebook.email = (profile.emails[0].value || '').toLowerCase();
+                        newUser.profile.gender = profile.gender;
+                        newUser.profile.birthday = profile._json.birthday;
+                        newUser.profile.location = profile._json.location.name;
+                        newUser.facebook.picturUrl = (profile.photos[0].value || '');
 
                         newUser.save(function(err) {
                             if (err)
@@ -200,6 +237,10 @@ module.exports = function(passport) {
                 user.facebook.token = token;
                 user.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName;
                 user.facebook.email = (profile.emails[0].value || '').toLowerCase();
+                user.profile.gender = profile.gender;
+                user.profile.birthday = profile._json.birthday;
+                user.profile.location = profile._json.location.name;
+                user.facebook.picturUrl = (profile.photos[0].value || '');
 
                 user.save(function(err) {
                     if (err)

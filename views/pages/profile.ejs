@@ -53,7 +53,7 @@
                 <div class="card-body">
                     <h5 class="card-title"><span class="fab fa-facebook"></span> Facebook</h5>
                     <p class="card-text">
-                    <% if (user.facebook.token) { %>
+                    <% if (user.hasFacebook()) { %>
                         <p>
                             <strong>id</strong>: <%= user.facebook.id %><br>
                             <strong>token</strong>: <%= user.facebook.token %><br>
@@ -77,7 +77,7 @@
                 <div class="card-body">
                     <h5 class="card-title"><span class="fab fa-twitter"></span> Twitter</h5>
                     <p class="card-text">
-                    <% if (user.twitter.token) { %>
+                    <% if (user.hasTwitter()) { %>
                         <p>
                             <strong>id</strong>: <%= user.twitter.id %><br>
                             <strong>token</strong>: <%= user.twitter.token %><br>
@@ -101,7 +101,7 @@
                 <div class="card-body">
                     <h5 class="card-title"><span class="fab fa-google-plus"></span> Google+</h5>
                     <p class="card-text">
-                    <% if (user.google.token) { %>
+                    <% if (user.hasGoogle()) { %>
                         <p>
                             <strong>id</strong>: <%= user.google.id %><br>
                             <strong>token</strong>: <%= user.google.token %><br>

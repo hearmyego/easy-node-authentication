@@ -4,24 +4,23 @@
 module.exports = {
 
     'facebookAuth' : {
-        'clientID'        : 'your-secret-clientID-here', // your App ID
-        'clientSecret'    : 'your-client-secret-here', // your App Secret
-        'callbackURL'     : 'http://localhost:8080/auth/facebook/callback',
-        'profileURL': 'https://graph.facebook.com/v2.5/me?fields=first_name,last_name,email',
-        'profileFields'   : ['id', 'email', 'name'] // For requesting permissions from Facebook API
-
+        'clientID'          : '1739476839614012',
+        'clientSecret'      : 'd87717bec1a5b00786d7823371c73af8',
+        'callbackURL'       : 'http://localhost:8080/auth/facebook/callback',
+        'profileURL'        : 'https://graph.facebook.com/v2.5/me?fields=id,email,first_name,middle_name,last_name,name,name',
+        'profileFields'     : ['birthday', 'picture', 'gender', 'location', 'friends', 'address']
     },
 
     'twitterAuth' : {
-        'consumerKey'        : 'your-consumer-key-here',
-        'consumerSecret'     : 'your-client-secret-here',
-        'callbackURL'        : 'http://localhost:8080/auth/twitter/callback'
+        'consumerKey'       : 'your-consumer-key-here',
+        'consumerSecret'    : 'your-client-secret-here',
+        'callbackURL'       : 'http://localhost:8080/auth/twitter/callback'
     },
 
     'googleAuth' : {
-        'clientID'         : 'your-secret-clientID-here',
-        'clientSecret'     : 'your-client-secret-here',
-        'callbackURL'      : 'http://localhost:8080/auth/google/callback'
+        'clientID'          : 'your-secret-clientID-here',
+        'clientSecret'      : 'your-client-secret-here',
+        'callbackURL'       : 'http://localhost:8080/auth/google/callback'
     }
 
 };

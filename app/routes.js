@@ -1,16 +1,73 @@
-module.exports = function(app, passport) {
+var mongoose    = require('mongoose');
+var User        = require('./models/user');
 
+module.exports = function(app, passport) {
 // normal routes ===============================================================
 
     // show the home page (will also have our login links)
     app.get('/', function(req, res) {
-        res.render('index.ejs');
+
+        var model = { 
+            page: 'pages/index.ejs',
+            user: req.user,
+            title: 'Frontpage',
+            params: {
+                message: req.flash('loginMessage')
+            } 
+        };
+
+        res.render('layout', { model: model });
     });
+
+    app.post('/', passport.authenticate('local-login', {
+        successRedirect : '/profile', // redirect to the secure profile section
+        failureRedirect : '/', // redirect back to the signup page if there is an error
+        failureFlash : true // allow flash messages
+    }));
 
     // PROFILE SECTION =========================
     app.get('/profile', isLoggedIn, function(req, res) {
-        res.render('profile.ejs', {
-            user : req.user
+
+        var model = { 
+            page: 'pages/profile.ejs',
+            user: req.user,
+            title: 'Profile',
+            params: {
+                user: req.user
+            } 
+        };
+
+        res.render('layout.ejs', { model: model });
+    });
+
+    app.get('/admin', isLoggedIn, function(req, res) {
+
+        User.find({}, function(err, users){
+
+            var model = { 
+                page: 'pages/admin.ejs',
+                user: req.user,
+                title: 'Admin',
+                params: {
+                    users: users,
+                    message: req.flash('adminMessage')
+                } 
+            };
+
+            res.render('layout.ejs', { model: model });
+        });
+    });
+
+    app.get('/admin/user/delete/:userId', isLoggedIn, function(req, res){
+        
+        var id = mongoose.Types.ObjectId(req.params.userId);
+
+        User.findByIdAndRemove(id, function(err, user){
+            if (err) { console.log("Error: " + err) }
+        })
+        .then(function (){
+            req.flash('adminMessage', req.params.userId + ' has been deleted');
+            res.redirect('/');
         });
     });
 
@@ -41,7 +98,17 @@ module.exports = function(app, passport) {
         // SIGNUP =================================
         // show the signup form
         app.get('/signup', function(req, res) {
-            res.render('signup.ejs', { message: req.flash('signupMessage') });
+
+            var model = { 
+                page: 'pages/signup.ejs',
+                user: req.user,
+                title: 'Signup',
+                params: {
+                    message: req.flash('signupMessage')
+                } 
+            };
+
+            res.render('layout.ejs', { model: model });
         });
 
         // process the signup form
@@ -54,7 +121,10 @@ module.exports = function(app, passport) {
     // facebook -------------------------------
 
         // send to facebook to do the authentication
-        app.get('/auth/facebook', passport.authenticate('facebook', { scope : ['public_profile', 'email'] }));
+        app.get('/auth/facebook', 
+            passport.authenticate('facebook', 
+                { scope : ['public_profile', 'user_photos', 'email', 'user_birthday', 'user_location', 'user_friends'] }
+            ));
 
         // handle the callback after facebook has authenticated the user
         app.get('/auth/facebook/callback',
@@ -96,6 +166,7 @@ module.exports = function(app, passport) {
         app.get('/connect/local', function(req, res) {
             res.render('connect-local.ejs', { message: req.flash('loginMessage') });
         });
+
         app.post('/connect/local', passport.authenticate('local-signup', {
             successRedirect : '/profile', // redirect to the secure profile section
             failureRedirect : '/connect/local', // redirect back to the signup page if there is an error
@@ -193,3 +264,21 @@ function isLoggedIn(req, res, next) {
 
     res.redirect('/');
 }
+
+
+function debugInfo (req, res, next) {
+
+    var model = {
+        params: req.params,
+        query: req.query,
+        cookies: req.cookies,
+        body: req.body,
+        path: req.path,
+        url: req.originalUrl,
+        route: req.route
+    };
+
+    console.log(model);
+
+    return next();
+};
